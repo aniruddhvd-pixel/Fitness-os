@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#050505">
+  <meta name="description" content="Personal fitness, nutrition, steps and workout tracker">
+  <title>FITNESS_OS</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app-shell">
+  <header class="topbar">
+    <div>
+      <div class="brand">FITNESS_OS<span class="blink">_</span></div>
+      <div class="subtitle">PERSONAL TRAINING // NUTRITION // PROGRESS</div>
+    </div>
+    <div class="datebox" id="todayLabel"></div>
+  </header>
+
+  <nav class="nav" aria-label="Main navigation">
+    <div class="side-title">FITNESS_OS // MENU</div>
+    <button class="nav-btn active" data-page="dashboard"><span>⌂</span> 01 DASHBOARD</button>
+    <button class="nav-btn" data-page="food"><span>▣</span> 02 FOOD LOG</button>
+    <button class="nav-btn" data-page="workout"><span>▣</span> 03 WORKOUT</button>
+    <button class="nav-btn" data-page="history"><span>▥</span> 04 PROGRESS</button>
+    <button class="nav-btn" data-page="settings"><span>⚙</span> 05 SETTINGS</button>
+    <button class="nav-btn" data-page="settings"><span>▤</span> 06 EXPORT / BACKUP</button>
+    <div class="side-quote">"Small steps<br>every day<br>lead to big<br>results."</div>
+    <div class="side-version">v2.0.0 // LOCAL</div>
+  </nav>
+
+  <main>
+    <section class="page active" id="dashboard">
+      <div class="hero-grid">
+        <div class="panel hero">
+          <div class="eyebrow">TODAY'S COMMAND CENTER</div>
+          <h1 id="greeting">READY.</h1>
+          <p id="coachHeadline">Log your food, steps and training. FITNESS_OS will tell you what to do next.</p>
+          <div class="coach-box" id="coachBox"></div>
+        </div>
+        <div class="panel">
+          <div class="section-title">QUICK INPUT</div>
+          <div class="quick-grid">
+            <label>STEPS<input id="quickSteps" type="number" min="0" max="100000" placeholder="e.g. 8500"></label>
+            <label>WEIGHT KG<input id="quickWeight" type="number" step="0.1" min="40" max="200" placeholder="e.g. 76.4"></label>
+          </div>
+          <button class="primary full" id="saveQuick">SAVE DAILY STATS</button>
+        </div>
+      </div>
+
+      <div class="metric-grid">
+        <div class="metric"><span>CALORIES</span><strong id="mCalories">0</strong><small>/ <b id="mCalTarget">1800</b> kcal</small><div class="meter"><i id="calMeter"></i></div></div>
+        <div class="metric"><span>PROTEIN</span><strong id="mProtein">0</strong><small>/ <b id="mProteinTarget">115</b> g</small><div class="meter"><i id="proteinMeter"></i></div></div>
+        <div class="metric"><span>CARBS</span><strong id="mCarbs">0</strong><small>g</small><div class="meter"><i id="carbMeter"></i></div></div>
+        <div class="metric"><span>FIBER</span><strong id="mFiber">0</strong><small>/ <b id="mFiberTarget">30</b> g</small><div class="meter"><i id="fiberMeter"></i></div></div>
+        <div class="metric"><span>STEPS</span><strong id="mSteps">0</strong><small>/ <b id="mStepTarget">10000</b></small><div class="meter"><i id="stepMeter"></i></div></div>
+        <div class="metric"><span>WATER</span><strong id="mWater">0</strong><small>/ <b id="mWaterTarget">2.5</b> L</small><div class="meter"><i id="waterMeter"></i></div></div>
+      </div>
+
+      <div class="two-col">
+        <div class="panel">
+          <div class="section-title">TODAY'S FOOD</div>
+          <div id="dashboardFood"></div>
+          <button class="secondary full" data-goto="food">+ ADD FOOD</button>
+        </div>
+        <div class="panel">
+          <div class="section-title">TODAY'S TRAINING</div>
+          <div id="dashboardWorkout"></div>
+          <button class="secondary full" data-goto="workout">OPEN WORKOUT</button>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="section-title">NEXT ACTION</div>
+        <div class="next-action" id="nextAction"></div>
+      </div>
+      <div class="dashboard-lower">
+        <div class="panel chart-panel"><div class="section-title">WEIGHT TREND // LAST 14 DAYS</div><canvas id="dashWeightChart" width="700" height="230"></canvas></div>
+        <div class="panel chart-panel"><div class="section-title">STEPS // LAST 7 DAYS</div><canvas id="dashStepsChart" width="700" height="230"></canvas></div>
+        <div class="panel workout-plan-panel"><div class="section-title">WEEKLY WORKOUT PLAN // PPL × 2</div><div id="dashWeeklyPlan"></div></div>
+      </div>
+    </section>
+
+    <section class="page" id="food">
+      <div class="page-head"><div><div class="eyebrow">02 // NUTRITION LOGGER</div><h2>WHAT DID YOU EAT?</h2></div><div class="pill" id="foodDate"></div></div>
+      <div class="two-col">
+        <div class="panel">
+          <div class="section-title">ADD FOOD</div>
+          <label>FOOD
+            <select id="foodSelect"></select>
+          </label>
+          <div class="quick-grid">
+            <label>AMOUNT (g)<input id="foodAmount" type="number" min="1" step="1" value="100"></label>
+            <label>MEAL
+              <select id="mealSelect"><option>Breakfast</option><option>Lunch</option><option>Snack</option><option>Dinner</option><option>Other</option></select>
+            </label>
+          </div>
+          <button class="primary full" id="addFood">ADD TO TODAY</button>
+          <div class="divider"></div>
+          <div class="section-title">CUSTOM FOOD</div>
+          <p class="hint">For packaged foods or recipes not in the database, enter the label values per 100 g.</p>
+          <div class="form-grid">
+            <label>NAME<input id="customName" placeholder="e.g. Homemade paneer"></label>
+            <label>CAL / 100G<input id="customCal" type="number" min="0"></label>
+            <label>PROTEIN / 100G<input id="customProtein" type="number" min="0"></label>
+            <label>CARBS / 100G<input id="customCarbs" type="number" min="0"></label>
+            <label>FAT / 100G<input id="customFat" type="number" min="0"></label>
+            <label>FIBER / 100G<input id="customFiber" type="number" min="0"></label>
+          </div>
+          <button class="secondary full" id="addCustom">SAVE CUSTOM FOOD</button>
+        </div>
+        <div class="panel">
+          <div class="section-title">TODAY'S TOTALS</div>
+          <div class="nutrition-big"><b id="foodCalTotal">0</b><span>kcal</span><b id="foodProTotal">0</b><span>g protein</span></div>
+          <div class="mini-stats">
+            <div>CARBS <b id="foodCarbTotal">0 g</b></div>
+            <div>FIBER <b id="foodFiberTotal">0 g</b></div>
+            <div>FAT <b id="foodFatTotal">0 g</b></div>
+          </div>
+          <div id="foodList"></div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="section-title">NUTRITION NOTE</div>
+        <div class="hint">Database values are estimates. For branded foods, use the nutrition label when available. The app calculates from the amount you enter and keeps the calculation transparent.</div>
+      </div>
+    </section>
+
+    <section class="page" id="workout">
+      <div class="page-head"><div><div class="eyebrow">03 // TRAINING ENGINE</div><h2>PUSH / PULL / LEGS × 2</h2></div><div class="pill" id="workoutDayPill"></div></div>
+      <div class="panel">
+        <div class="week-strip" id="weekStrip"></div>
+      </div>
+      <div class="two-col">
+        <div class="panel">
+          <div class="section-title" id="workoutTitle">TODAY</div>
+          <p class="hint" id="workoutDescription"></p>
+          <div id="exerciseList"></div>
+        </div>
+        <div class="panel">
+          <div class="section-title">SESSION LOG</div>
+          <div class="form-grid">
+            <label>EXERCISE<select id="exerciseSelect"></select></label>
+            <label>SETS<input id="exSets" type="number" min="1" max="10" value="3"></label>
+            <label>REPS<input id="exReps" type="number" min="1" max="50" value="10"></label>
+            <label>WEIGHT KG<input id="exWeight" type="number" min="0" step="0.5" value="0"></label>
+          </div>
+          <button class="primary full" id="logExercise">LOG EXERCISE</button>
+          <div id="sessionLogs"></div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="section-title">TRAINING RULE</div>
+        <div class="coach-box">Use a weight you can control. Most working sets should finish with roughly 1–2 good reps still available. When you reach the top of the prescribed rep range with clean form, increase the load slightly next time.</div>
+      </div>
+    </section>
+
+    <section class="page" id="history">
+      <div class="page-head"><div><div class="eyebrow">04 // PROGRESS DATABASE</div><h2>YOUR TREND</h2></div></div>
+      <div class="metric-grid">
+        <div class="metric"><span>CURRENT WEIGHT</span><strong id="hWeight">--</strong><small>kg</small></div>
+        <div class="metric"><span>CHANGE FROM START</span><strong id="hChange">--</strong><small>kg</small></div>
+        <div class="metric"><span>7-DAY AVG STEPS</span><strong id="hAvgSteps">--</strong><small>/ day</small></div>
+        <div class="metric"><span>REPORTS</span><strong id="hReports">0</strong><small>days</small></div>
+      </div>
+      <div class="panel"><div class="section-title">WEIGHT TREND</div><canvas id="weightChart" width="900" height="250"></canvas></div>
+      <div class="panel"><div class="section-title">DAILY REPORTS</div><div class="table-wrap"><table><thead><tr><th>DATE</th><th>WT</th><th>STEPS</th><th>KCAL</th><th>PRO</th><th>FIBER</th><th>WORKOUT</th></tr></thead><tbody id="historyTable"></tbody></table></div></div>
+    </section>
+
+    <section class="page" id="settings">
+      <div class="page-head"><div><div class="eyebrow">05 // SYSTEM CONFIG</div><h2>GOALS & PROFILE</h2></div></div>
+      <div class="panel">
+        <div class="section-title">BODY / DAILY TARGETS</div>
+        <div class="form-grid">
+          <label>HEIGHT CM<input id="setHeight" type="number" step="0.1"></label>
+          <label>START WEIGHT KG<input id="setStartWeight" type="number" step="0.1"></label>
+          <label>GOAL WEIGHT KG<input id="setGoalWeight" type="number" step="0.1"></label>
+          <label>CALORIES / DAY<input id="setCalories" type="number"></label>
+          <label>PROTEIN / DAY<input id="setProtein" type="number"></label>
+          <label>CARBS / DAY<input id="setCarbs" type="number"></label>
+          <label>FIBER / DAY<input id="setFiber" type="number"></label>
+          <label>STEPS / DAY<input id="setSteps" type="number"></label>
+          <label>WATER / DAY (L)<input id="setWater" type="number" step="0.1"></label>
+        </div>
+        <button class="primary" id="saveSettings">SAVE SETTINGS</button>
+        <span id="settingsSaved" class="hint"></span>
+      </div>
+      <div class="panel">
+        <div class="section-title">DATA</div>
+        <div class="actions">
+          <button class="secondary" id="exportData">EXPORT BACKUP JSON</button>
+          <label class="file-btn">IMPORT BACKUP JSON<input id="importData" type="file" accept=".json" hidden></label>
+          <button class="danger" id="resetData">RESET ALL DATA</button>
+        </div>
+        <p class="hint">Use Export Backup before changing devices or browsers. GitHub Pages itself does not store your personal entries; this version keeps them locally in your browser.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>FITNESS_OS // LOCAL-FIRST // YOUR DATA STAYS IN YOUR BROWSER</footer>
+</div>
+<script src="app.js"></script>
+</body>
+</html>
